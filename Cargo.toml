@@ -3,7 +3,7 @@ name = "wintab_lite"
 description="Read pen tablet pressure with these lightly oxidized wintab bindings"
 version = "0.1.0"
 edition = "2021"
-license = ""
+license = "MIT"
 
 [dependencies]
 bitflags = "2.5.0"
