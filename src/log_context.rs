@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 use bitflags::bitflags;
 use crate::{Bitmask, CString40};
 use super::c_type_aliases::*;

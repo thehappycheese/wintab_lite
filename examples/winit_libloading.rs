@@ -17,7 +17,12 @@ use winit::{
 };
 
 use wintab_lite::{
-    cast_void, ButtonChange, ButtonChangeType, Packet, WTClose, WTDataGet, WTInfo, WTOpen, WTPacket, WTQueuePacketsEx, AXIS, CXO, DVC, LOGCONTEXT, WTI, WTPKT, XYZ
+    cast_void, 
+    //ButtonChange,
+    //ButtonChangeType,
+    //WTPacket,
+    Packet, WTClose, WTDataGet, WTInfo, WTOpen, 
+    WTQueuePacketsEx, AXIS, CXO, DVC, LOGCONTEXT, WTI, WTPKT, XYZ
 };
 
 fn extract_window_handel(window_holder: &Window) -> Result<HWND> {
@@ -50,7 +55,7 @@ fn main() -> Result<()> {
     let wtclose: Symbol<WTClose> = unsafe { lib.get(c"WTClose".to_bytes())? };
     let wtqueue: Symbol<WTQueuePacketsEx> = unsafe { lib.get(c"WTQueuePacketsEx".to_bytes())? };
     let wtdataget: Symbol<WTDataGet> = unsafe { lib.get(c"WTDataGet".to_bytes())? };
-    let wtpacket: Symbol<WTPacket> = unsafe { lib.get(c"WTPacket".to_bytes())? };
+    //let wtpacket: Symbol<WTPacket> = unsafe { lib.get(c"WTPacket".to_bytes())? };
 
     // ==========================================
     // mutable variables that wintab can write to
@@ -95,7 +100,7 @@ fn main() -> Result<()> {
     let result = unsafe { wtinfoa(WTI::DEVICES, DVC::NAME as u32, std::ptr::null_mut()) };
     println!("Byte syze of DVC::NAME {result:?}");
     let mut device_name = vec![0u8; result as usize];
-    let result = unsafe {
+    let _result = unsafe {
         wtinfoa(
             WTI::DEVICES,
             DVC::NAME as u32,
@@ -200,7 +205,7 @@ fn main() -> Result<()> {
                         const MAX_PACKETS_TO_GET: i32 = 100;
                         let mut packets: [Packet; MAX_PACKETS_TO_GET as usize] =
                             core::array::from_fn(|_| Packet::default());
-                        let total_actually_found = unsafe {
+                        let _total_actually_found = unsafe {
                             wtdataget(
                                 wintab_context_handel,
                                 from,
@@ -249,7 +254,7 @@ fn main() -> Result<()> {
                 window_holder.request_redraw();
             }
             Event::WindowEvent {
-                event: WindowEvent::Resized(size),
+                event: WindowEvent::Resized(_),
                 ..
             } => {
                 window_holder.request_redraw();

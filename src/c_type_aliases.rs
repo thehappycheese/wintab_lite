@@ -47,12 +47,12 @@ impl FIX32 {
     }
 
     /// Extracts the integer part of the fixed-point number. (high word)
-    fn int_part(self) -> c_uint {
+    pub fn int_part(self) -> c_uint {
         self.0 >> 16
     }
 
     /// Extracts the fractional part of the fixed-point number. (low word)
-    fn frac_part(self) -> c_uint {
+    pub fn frac_part(self) -> c_uint {
         self.0 & 0xFFFF
     }
 }

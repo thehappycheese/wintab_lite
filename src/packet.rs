@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 use bitflags::bitflags;
 use crate::{
     c_type_aliases::{

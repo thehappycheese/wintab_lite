@@ -1,6 +1,5 @@
-use std::{default, fmt::Binary, ops::Deref};
-
-
+#![allow(non_snake_case)]
+use std::{fmt::Binary, ops::Deref};
 
 /// This is a wrapper for integer types that basically just changes
 /// the debug display to show as a binary string of 1s and 0s

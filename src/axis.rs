@@ -6,6 +6,7 @@ use crate::{
 /// Describes range and resolution for many of the packet data items.
 #[repr(C)]
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[allow(non_snake_case)]
 pub struct AXIS{
     /// Minimum value of the data item in the tablet's native coordinates.
     pub axMin        : LONG,

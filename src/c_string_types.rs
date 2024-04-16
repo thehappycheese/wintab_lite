@@ -78,7 +78,7 @@ impl CString40 {
 mod tests {
     use super::*;
     #[test]
-    fn test_CString40(){
+    fn test_cstring40(){
         let mut buffer:[std::ffi::c_uchar; 40] = [0; 40];
         
         let cstring = CString40{inner: buffer.clone()};
