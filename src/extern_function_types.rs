@@ -1,42 +1,43 @@
-use std::ffi::{c_int, c_void};
+/// The types defined in this module are intended to be dynamically linked using
+/// the `libloading` crate or similar
 
+use std::ffi::{c_int, c_void};
 use super::c_type_aliases::*;
 use super::information_categories::WTI;
 use super::LOGCONTEXT;
 
-/// This function returns global information about the interface in an application-supplied buffer. Different types of
-/// information are specified by different index arguments. Applications use this function to receive information about
-/// tablet coordinates, physical dimensions, capabilities, and cursor types.
+/// Returns information about the interface in an application-supplied buffer. 
 /// 
-/// - `wCategory` Identifies the category from which information is being requested.
+/// - `wCategory` Identifies the category from which information is being requested
+///   (e.g. tablet coordinates, physical dimensions, capabilities, and cursor types)
 /// - `nIndex` Identifies which information is being requested from within the category.
 /// - `lpOutput` Points to a buffer to hold the requested information.
 /// 
-/// The return value specifies the size of the returned information in bytes. If the information is not supported, the
+/// The return value is the size of the returned information in bytes. If the information is not supported, the
 /// function returns zero. If a tablet is not physically present, this function always returns zero.
 pub type WTInfo  = unsafe extern fn (wCategory: WTI, nIndex: UINT, lpOutput: *mut c_void) -> UINT;
 
-/// This function establishes an active context on the tablet. On successful completion of this function, the
-/// application may begin receiving tablet events via messages (if they were requested), and may use the handle returned
-/// to poll the context, or to perform other context-related functions.
+/// Opens a connection to the tablet using the provided context.
+/// If successful, the the specified window will receive tablet events via messages (if configured).
+/// The handle that is returned may also be used to poll the context, or to perform other functions.
 /// 
-/// - `hWnd` Identifies the window that owns the tablet context, and receives messages from the context.
-/// - `lpLogCtx` Points to an application-provided LOGCONTEXT data structure describing the context to be opened.
+/// - `hWnd` The window handel that owns the tablet context, and receives messages from the context.
+/// - `lpLogCtx` is a pointer to a [LOGCONTEXT] data structure describing the context to be opened.
 /// - `fEnable` Specifies whether the new context will immediately begin processing input data.
 /// 
-/// The return value identifies the new context. It is NULL if the context is not opened.
+/// The return value is the opened context handel. It will be a zero value if the context could not be opened.
 pub type WTOpen  = unsafe extern fn (hWnd: isize, lpLogCtx: *mut LOGCONTEXT, fEnable: BOOL  ) -> *mut HCTX;
 
-/// This function closes and destroys the tablet context object.
-/// After a call to this function, the passed handle is no longer valid. The owning window (and all manager windows)
-/// will receive a WT_CTXCLOSE message when the context has been closed.
+/// Closes and destroys the tablet context object.
+/// After a calling the passed handle is invalid. The owning window (and all manager windows)
+/// will receive a [WT::CTXCLOSE](crate::WT) message when the context has been closed.
 /// 
 /// - `hCtx` Identifies the context to be closed.
 /// 
 /// The function returns a non-zero value if the context was valid and was destroyed. Otherwise, it returns zero.
 pub type WTClose  = unsafe extern fn (hCtx: *mut HCTX) -> BOOL;
 
-/// This function fills in the passed lpPkt buffer with the context event packet having the specified serial number.
+/// Fills in the passed buffer with the event packet having the specified serial number.
 /// The returned packet and any older packets are removed from the context's internal queue.
 /// 
 /// - `hCtx` Identifies the context whose packets are being returned.
@@ -103,4 +104,3 @@ pub type WTPacketsGet = unsafe extern fn (
     cMaxPkts: c_int,
     lpPkts: *mut c_void
 ) -> c_int;
-

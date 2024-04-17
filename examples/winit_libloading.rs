@@ -90,6 +90,7 @@ fn main() -> Result<()> {
     // This flexibility is unnecessary if we statically define the struct
     // and just grab all fields
     log_context.lcPktData = WTPKT::all();
+    log_context.lcPktMode = WTPKT::empty();
     //log_context.lcPktMode   = WTPKT::BUTTONS; // does not work when this is set on my system
     log_context.lcMoveMask = WTPKT::X | WTPKT::Y | WTPKT::NORMAL_PRESSURE;
     // This is pointless as far as I can tell:

@@ -21,10 +21,9 @@ pub type BOOL = c_int;
 
 
 /// This is not meant to be instantiated, we only ever use the pointer to this type
-#[repr(C)]
-pub struct HWND(isize);
-
-/// This is not meant to be instantiated, we only ever use the pointer to this type
+/// 
+/// Note: it is not clear if this type is actually needed or if we can just
+///       store an [isize] value instead of a pointer to this type.
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Default)]
 pub struct HCTX (std::ffi::c_int);
@@ -34,7 +33,7 @@ pub struct HCTX (std::ffi::c_int);
 /// Thus, the type contains 16 bits to the left of the radix point and 16 bits to the right of it.
 /// 
 /// This struct dereferences into an `f64` for actual usage,
-/// no methods for actual fixed point arithmetic are actually provided.
+/// no methods for actual fixed point arithmetic are actually provided by this crate.
 /// 
 /// > Note: this type makes the assumption that a [DWORD] translates to a [u32] on your system.
 #[derive(Default, Clone, Copy, PartialEq, Eq)]

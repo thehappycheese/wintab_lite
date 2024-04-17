@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-
+/// A utility struct to represent a 3 dimensional coordinate
 #[repr(C)]
 #[derive(Copy, Clone, Default, PartialEq, Eq)]
 pub struct XYZ<T>{
@@ -9,6 +9,7 @@ pub struct XYZ<T>{
     pub z:T
 }
 
+/// A utility struct to represent a 2 dimensional coordinate
 #[repr(C)]
 #[derive(Copy, Clone, Default, PartialEq, Eq)]
 pub struct XY<T>{

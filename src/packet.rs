@@ -17,7 +17,8 @@ pub enum ButtonChangeType {
 }
 
 
-// TODO: it is unknown if I have the order of these struct fields correct
+/// This struct is unused, in a previous version it was the type of [Packet::pkButtons]
+/// I think it was working, but i opted to use the bitmask datatype instead.
 #[repr(C)]
 #[derive(Default, Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ButtonChange {
@@ -79,14 +80,13 @@ bitflags! {
 /// [`LOGCONTEXT`] where 
 /// 
 /// - [`.lcPktData`] field has been set to [`WTPKT::all()`] (include all fields in struct) and
-/// - [`.lcPktMode`] has been set to [`WTPKT::BUTTONS`] (Only buttons in relative mode)
+/// - [`.lcPktMode`] has been set to [`WTPKT::empty()`] (everything absolute mode)
 /// 
 /// 
 /// [`WTOpen`]:        crate::WTOpen
 /// [`LOGCONTEXT`]:     crate::LOGCONTEXT
 /// [`.lcPktData`]:     crate::LOGCONTEXT::lcPktData
 /// [`.lcPktMode`]:     crate::LOGCONTEXT::lcPktMode
-/// [`WTPKT::all()`]:   crate::WTPKT::all()
 /// [`WTPKT::BUTTONS`]: crate::WTPKT::BUTTONS
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[repr(C, packed(4))]
@@ -112,36 +112,42 @@ pub struct Packet {
     /// Specifies which cursor type generated the packet.
     pub pkCursor: UINT,
 
-    /// In "absolute" mode (i.e. `log_context.lcPktMode &= !WTPKT::BUTTONS;`),
-    /// is a bitmask containing the current button state. 
-    /// Note: When buttons are set to relative mode (`log_context.lcPktMode |= WTPKT::BUTTONS;`)
-    /// Then this field would be a ButtonChange Struct. However this just didn't work on my system.
-    /// Hence I have hard coded the "absolute" i.e. bitmask option.
+    /// a bitmask containing the current state of all buttons.
+    /// This requires the context to be configured in absolute mode 
+    /// (i.e. `log_context.lcPktMode &= !WTPKT::BUTTONS;`)
+    /// 
+    /// > When buttons are set to relative mode (i.e. `log_context.lcPktMode |= WTPKT::BUTTONS;`)
+    /// > Then this field would be a [ButtonChange] Struct. However this just didn't work when I tested it.
+    /// > Hence I have hard coded the "absolute" i.e. bitmask option.
     //pub pkButtons: ButtonChange,
     pub pkButtons: Bitmask<u32>,
     
-    /// In absolute mode, each is a DWORD containing the scaled cursor location along the x, y, and z axes,
-    /// respectively. In relative mode, each is a LONG containing the scaled change in cursor position.
+    /// In absolute mode, the scaled cursor location
+    /// In relative mode, the scaled change in cursor position.
     /// 
-    /// In practice I seem to be getting signed long values even in absolute mode, possibly due to
-    /// incorrect configuration of the extents in [crate::LOGCONTEXT].
+    /// Despite original documentation, this appears to always be a signed integer type.
     pub pkXYZ:XYZ<LONG>,
 
     /// The adjusted state of the normal pressure
     /// This is a UINT in absolute mode, and in relative mode it is an int containing the change in pressure state.
-    /// Only absolute mode is supported with this struct.
+    /// 
+    /// > Currently only absolute mode is supported with this struct,
+    /// > however it might be safe to just interpret this as a signed integer if you configured
+    /// > the context in relative mode.
     pub pkNormalPressure:UINT,
 
     /// The state of the tangent pressure
     /// This is a UINT in absolute mode, and in relative mode it is an int containing the change in pressure state.
-    /// Only absolute mode is supported with this struct.
+    ///
+    /// > Currently only absolute mode is supported with this struct,
+    /// > however it might be safe to just interpret this as a signed integer if you configured
+    /// > the context in relative mode.
     pub pkTangentPressure:UINT,
 
-    /// Contains updated cursor orientation information. For details, see the description of the ORIENTATION data
-    /// structure.
+    /// Contains updated cursor orientation information.
     pub pkOrientation:Orientation,
 
-    /// Contains updated cursor rotation information. For details, see the description of the ROTATION data structure.
+    /// Contains updated cursor rotation information.
     pub pkRotation:Rotation,
 }
 impl Default for Packet {

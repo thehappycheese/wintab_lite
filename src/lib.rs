@@ -8,8 +8,6 @@
 //! See [here](https://github.com/Wacom-Developer/wacom-device-kit-windows/blob/881d8e8303e858e53584e70235fe32e3c9ef06f2/Wintab%20Pressure%20Test/SampleCode/Wintab/WINTAB.H#L1C1-L10C81) and [here](https://developer-docs.wacom.com/docs/icbt/windows/wintab/wintab-reference/)
 //! However the example code provided by Wacom is MIT licensed [here](https://github.com/Wacom-Developer/wacom-device-kit-windows/blob/881d8e8303e858e53584e70235fe32e3c9ef06f2/Wintab%20Pressure%20Test/SampleCode/MIT-license.txt)
 //! 
-//! Efforts have been made to avoid replicating that information directly.
-//! 
 //! For example usage please read / run the example `cargo run --example wininit_libloading`
 mod c_type_aliases;
 mod log_context;
@@ -21,8 +19,17 @@ mod coordinate;
 mod information_categories;
 mod c_string_types;
 mod bitmask;
+mod window_message;
 
-pub use c_type_aliases::*;
+pub use c_type_aliases::{
+    BOOL,
+    DWORD,
+    FIX32,
+    HCTX,
+    INT,
+    UINT,
+    LONG,
+};
 pub use c_string_types::CString40;
 pub use bitmask::Bitmask;
 pub use coordinate::{XY, XYZ};
@@ -59,9 +66,13 @@ pub use information_categories::{
     IFC,
     STA,
 };
+pub mod WT{
+    pub use crate::window_message::*;
+}
 
 
-/// Takes a mutable reference and casts it to a void pointer: `type LPVOID = *mut std::ffi::c_void`.
+/// Takes a mutable reference to the input then casts it to a void pointer:
+/// The result can be interpreted as [LPVOID] or `*mut std::ffi::c_void`.
 #[macro_export]
 macro_rules! cast_void{
     ($e:expr) => {

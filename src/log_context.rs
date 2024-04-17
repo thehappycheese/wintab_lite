@@ -121,7 +121,7 @@ impl Default for LOGCONTEXT{
             lcMsgBase: 0,
             lcDevice: 0,
             lcPktRate: 0,
-            lcPktData:  WTPKT::empty(),
+            lcPktData:  WTPKT::all(),
             lcPktMode:  WTPKT::empty(),
             lcMoveMask: WTPKT::empty(),
             lcBtnDnMask: Bitmask(0),
