@@ -66,6 +66,12 @@ pub use information_categories::{
     IFC,
     STA,
 };
+
+/// These are the event numbers of the wintab events which are sent to the window
+/// that owns the a context or any 'manager' windows. e.g. [WT::PACKET] is the event
+/// received by a window when a packet is available.
+/// 
+#[allow(non_snake_case)]
 pub mod WT{
     pub use crate::window_message::*;
 }
