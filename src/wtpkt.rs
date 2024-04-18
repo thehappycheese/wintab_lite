@@ -1,10 +1,10 @@
-use bitflags::bitflags;
 use crate::DWORD;
+use bitflags::bitflags;
 
 bitflags! {
-    /// Bit field that specifies the various optional data items available in event packets.
-    /// It is a 32-bit field. The event packet field flags can be combined using the bitwise OR operator.
-    /// The WTPKT bit field can contain the values listed below, as well as any defined for extension data items.
+    /// Data items available in event packets.
+    /// Can also contain extension data items not documented below.
+    #[repr(C)]
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
     pub struct WTPKT: DWORD {
         /// Specifies the handle of the reporting context
@@ -37,18 +37,14 @@ bitflags! {
         const         ROTATION = 0b10000000000000;
     }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
     fn test_wtpkt() {
-        
         let basic_combo = WTPKT::X | WTPKT::Y | WTPKT::BUTTONS | WTPKT::NORMAL_PRESSURE;
-
         println!("{:?}", basic_combo);
-        assert_eq!(
-            basic_combo.bits(),
-            1472
-        );
+        assert_eq!(basic_combo.bits(), 1472);
     }
 }

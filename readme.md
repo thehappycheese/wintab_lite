@@ -4,7 +4,6 @@ Defines a minimal set of types to get rust working with wintab.
 
 - [1. Licence](#1-licence)
 - [2. Example  `wintab_lite` with `winit` and `libloading`](#2-example--wintab_lite-with-winit-and-libloading)
-  - [2.1. Usage](#21-usage)
   - [2.2. Limitations](#22-limitations)
 - [3. Alternatives](#3-alternatives)
 - [4. Things I learned](#4-things-i-learned)
@@ -20,11 +19,10 @@ The example code provided by Wacom is MIT licensed [here](https://github.com/Wac
 ## 2. Example  `wintab_lite` with `winit` and `libloading`
 
 ```bash
-cargo run --example winit_libloading
+cargo run --example winit_libloading --features="libloading"
+# OR
+cargo run --example windows_raw_dylib --features="raw-dylib"
 ```
-
-### 2.1. Usage
-
 - Press `c` on the keyboard to clear the view.
 - Only wintab input will cause anything to be drawn. Mouse won't do anything.
 
@@ -32,10 +30,13 @@ cargo run --example winit_libloading
 
 ### 2.2. Limitations
 
-- This demo worked for me with my hardware, it does not strictly follow best practices, so you may find you need to tweek the setup code;
-  - For example I found that the default LOGCONTEXT object was configured
-     differently from what the documentation said on my system, so your milage
-     may vary.
+- The examples worked for me with my hardware, however I didn't try to strictly
+  follow all guidance in the docs, so edge cases and other hardware may need
+  some extra code to properly configure the LOGCONTEXT object.
+  - For example; I found that the default LOGCONTEXT object was mostly already
+    configured as needed. The documentation gave me the impression that more
+    setup steps should be needed? so your milage may vary depending on your
+    system and device.
 
 ## 3. Alternatives
 
@@ -60,6 +61,6 @@ have a good time with that approach
     queue. YOu only need access to the `hwnd` pointer. This is good news as it
     means it is likely-ish I can get this working in `bevy`, as long as the
     plugin lets me have the `hwnd` :P
-- My tablet only reports button 1; the pen tip button. Other buttons are
-  reported as keystrokes???! I think winit has misinterpreted something there.
-  they should be mouse events. Perhaps I broke something in the event loop?
+  - The `winit` project is in the process of overhauling how the event loop
+    works. Hopefully they see fit to make `lparam` and `wparam` available in the new
+    system.

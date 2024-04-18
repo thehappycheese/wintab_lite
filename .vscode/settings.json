@@ -1,0 +1,39 @@
+{
+    "cSpell.words": [
+        "bitflags",
+        "Bitmask",
+        "CSRCHANGE",
+        "CSRMESSAGES",
+        "CTXCLOSE",
+        "DEFSYSCTX",
+        "dylib",
+        "HBRUSH",
+        "HCTX",
+        "hinstance",
+        "HREDRAW",
+        "HWND",
+        "INASPECT",
+        "INSIZE",
+        "libloading",
+        "LOGCONTEXT",
+        "LPARAM",
+        "LPVOID",
+        "LRESULT",
+        "MGNINSIDE",
+        "ONTOP",
+        "PAINTSTRUCT",
+        "Pkts",
+        "repr",
+        "SYSOUT",
+        "USEDEFAULT",
+        "VREDRAW",
+        "wintab",
+        "WNDCLASSA",
+        "WPARAM",
+        "wtpkt"
+    ],
+    "editor.rulers": [
+        100
+    ],
+    "rust-analyzer.cargo.features":"all"
+}

@@ -1,13 +1,15 @@
 [package]
 name = "wintab_lite"
 description="Read pen tablet pressure with these lightly oxidized wintab bindings"
-version = "0.2.0"
+version = "1.0.0"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/thehappycheese/wintab_lite"
 
 [dependencies]
 bitflags = "2.5.0"
+windows = {version="0.56.0"}
+libloading = {version = "0.8.3", optional = true}
 
 # used in the example
 [dev-dependencies]
@@ -15,3 +17,16 @@ libloading = "0.8.3"
 anyhow = "1.0.81"
 winit = "0.29.15"
 windows={version="0.56.0", features=["Win32_Graphics_Gdi","Win32_UI_WindowsAndMessaging","Win32_System_LibraryLoader"]}
+
+[features]
+default=[]
+raw-dylib=[]
+libloading=["dep:libloading"]
+
+[[example]]
+name = "winit_libloading"
+required-features=["libloading"]
+
+[[example]]
+name="windows_raw_dylib"
+required-features=["raw-dylib"]

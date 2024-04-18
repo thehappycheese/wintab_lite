@@ -3,6 +3,7 @@ use std::ffi::{
     c_uint,
     c_int,
     c_long,
+    c_void,
 };
 
 /// = std::ffi::c_long ≈ i32
@@ -13,12 +14,15 @@ pub type DWORD = c_ulong;
 /// = std::ffi::u_int ≈ u32
 pub type UINT = c_uint;
 /// = std::ffi::c_int ≈ i32
-/// (Note the original wintab spec just uses `int` directly. I create this alias for consistency in this crate)
+/// Note: the original wintab spec just uses `int` directly. I create this alias for consistency
+/// in this crate
 pub type INT = c_int;
 
 /// = std::ffi::c_int ≈ i32
 pub type BOOL = c_int;
 
+/// = *mut std::ffi::c_void
+pub type LPVOID = *mut c_void;
 
 /// This is not meant to be instantiated, we only ever use the pointer to this type
 /// 
@@ -36,6 +40,7 @@ pub struct HCTX (std::ffi::c_int);
 /// no methods for actual fixed point arithmetic are actually provided by this crate.
 /// 
 /// > Note: this type makes the assumption that a [DWORD] translates to a [u32] on your system.
+#[repr(C)]
 #[derive(Default, Clone, Copy, PartialEq, Eq)]
 pub struct FIX32(DWORD);
 

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use anyhow::{anyhow, Result};
-use libloading::{Library, Symbol};
+use libloading::Library;
 use windows::Win32::{
     Foundation::{HWND, RECT},
     Graphics::Gdi::{
@@ -17,12 +17,20 @@ use winit::{
 };
 
 use wintab_lite::{
-    cast_void, 
-    //ButtonChange,
-    //ButtonChangeType,
-    //WTPacket,
-    Packet, WTClose, WTDataGet, WTInfo, WTOpen, 
-    WTQueuePacketsEx, AXIS, CXO, DVC, LOGCONTEXT, WTI, WTPKT, XYZ
+    cast_void,
+    Packet,
+    WTClose,
+    WTDataGet,
+    WTInfo,
+    WTOpen, 
+    WTQueuePacketsEx,
+    AXIS,
+    CXO,
+    DVC,
+    LOGCONTEXT,
+    WTI,
+    WTPKT,
+    XYZ
 };
 
 fn extract_window_handel(window_holder: &Window) -> Result<HWND> {
@@ -42,7 +50,7 @@ fn main() -> Result<()> {
     // winit setup hijinks
     let event_loop = EventLoop::new()?;
     let window = WindowBuilder::new()
-        .with_title("test wintab_lite with winit and libloading")
+        .with_title("wintab_lite example: winit_libloading")
         .build(&event_loop)?;
     event_loop.set_control_flow(ControlFlow::Poll);
     let window_holder = Arc::new(window);
@@ -50,12 +58,11 @@ fn main() -> Result<()> {
     // ======================================================
     // wintab can only be dynamically linked as far as I know
     let lib = unsafe { Library::new("Wintab32.dll")? };
-    let wtopena: Symbol<WTOpen> = unsafe { lib.get(c"WTOpenA".to_bytes())? };
-    let wtinfoa: Symbol<WTInfo> = unsafe { lib.get(c"WTInfoA".to_bytes())? };
-    let wtclose: Symbol<WTClose> = unsafe { lib.get(c"WTClose".to_bytes())? };
-    let wtqueue: Symbol<WTQueuePacketsEx> = unsafe { lib.get(c"WTQueuePacketsEx".to_bytes())? };
-    let wtdataget: Symbol<WTDataGet> = unsafe { lib.get(c"WTDataGet".to_bytes())? };
-    //let wtpacket: Symbol<WTPacket> = unsafe { lib.get(c"WTPacket".to_bytes())? };
+    let wintab_open: WTOpen = unsafe { lib.get(c"WTOpenA".to_bytes())? };
+    let wintab_info: WTInfo = unsafe { lib.get(c"WTInfoA".to_bytes())? };
+    let wintab_close: WTClose = unsafe { lib.get(c"WTClose".to_bytes())? };
+    let wintab_queue: WTQueuePacketsEx = unsafe { lib.get(c"WTQueuePacketsEx".to_bytes())? };
+    let wintab_data_get: WTDataGet = unsafe { lib.get(c"WTDataGet".to_bytes())? };
 
     // ==========================================
     // mutable variables that wintab can write to
@@ -68,7 +75,7 @@ fn main() -> Result<()> {
     let hwnd = extract_window_handel(&window_holder)?;
     // ======================================
     // Query wintab for its default 'context'
-    let return_value = unsafe { wtinfoa(WTI::DEFSYSCTX, 0, cast_void!(log_context)) };
+    let return_value = unsafe { wintab_info(WTI::DEFSYSCTX, 0, cast_void!(log_context)) };
     assert_ne!(return_value, 0);
     println!("Default Wintab system context");
     println!("{:#?}", log_context);
@@ -97,12 +104,13 @@ fn main() -> Result<()> {
     log_context.lcBtnUpMask = log_context.lcBtnDnMask;
 
     // ======================================
-    // Request Device Name. this is done in 2 steps since there is no documented maximum buffer length 👍
-    let result = unsafe { wtinfoa(WTI::DEVICES, DVC::NAME as u32, std::ptr::null_mut()) };
+    // Request Device Name. this is done in 2 steps since there is no documented maximum
+    // buffer length 👍
+    let result = unsafe { wintab_info(WTI::DEVICES, DVC::NAME as u32, std::ptr::null_mut()) };
     println!("Byte syze of DVC::NAME {result:?}");
     let mut device_name = vec![0u8; result as usize];
     let _result = unsafe {
-        wtinfoa(
+        wintab_info(
             WTI::DEVICES,
             DVC::NAME as u32,
             device_name.as_mut_ptr() as *mut std::ffi::c_void,
@@ -117,9 +125,9 @@ fn main() -> Result<()> {
 
     // ======================================
     // Request device axes
-    let result = unsafe { wtinfoa(WTI::DEVICES, DVC::X as u32, cast_void!(tablet_x)) };
+    let result = unsafe { wintab_info(WTI::DEVICES, DVC::X as u32, cast_void!(tablet_x)) };
     assert_eq!(result as usize, std::mem::size_of::<AXIS>());
-    let result = unsafe { wtinfoa(WTI::DEVICES, DVC::Y as u32, cast_void!(tablet_y)) };
+    let result = unsafe { wintab_info(WTI::DEVICES, DVC::Y as u32, cast_void!(tablet_y)) };
     assert_eq!(result as usize, std::mem::size_of::<AXIS>());
     println!("Tablet x,y axes");
     println!("{:#?}", tablet_x);
@@ -127,10 +135,10 @@ fn main() -> Result<()> {
 
     // ======================================
     // configure the context.
-    // The example code does a heap more stuff here, assigning variables to the context to configure it.
-    // It queries the window and desktop sizes etc. I have found that none of this is needed. The default
-    // context is already configured as needed. I am not convinced there is a need for the next few lines
+
+    // I found this was a redundant assignment when testing:
     log_context.lcInOrgXYZ = XYZ::default();
+    // found this is a redundant assignment when testing:
     log_context.lcInExtXYZ = XYZ {
         x: tablet_x.axMax,
         y: tablet_y.axMax,
@@ -146,8 +154,9 @@ fn main() -> Result<()> {
     // ======================================
     // Open the context
     // use the laboriously configured LOGCONTEXT struct to finally open a connection with our window
-    // The example says we are supposed to open it in the disabled state... but why. I just open it in enabled state.
-    let wintab_context_handel = unsafe { wtopena(hwnd.0, &mut log_context, 1) };
+    // The example says we are supposed to open it in the disabled state... but why. I just open it 
+    // in enabled state.
+    let wintab_context_handel = unsafe { wintab_open(hwnd, &mut log_context, 1) };
     println!("Wintab context handel {:?}", wintab_context_handel);
     println!("Log Context after open {log_context:#?}");
 
@@ -163,7 +172,7 @@ fn main() -> Result<()> {
                 ..
             } => {
                 println!("The close button was pressed; stopping");
-                match unsafe { wtclose(wintab_context_handel) } {
+                match unsafe { wintab_close(wintab_context_handel) } {
                     0 => {}
                     _ => {
                         println!("WARNING: WTClose Failed");
@@ -192,22 +201,15 @@ fn main() -> Result<()> {
                 // Application update code.
                 let mut from = 0;
                 let mut to = 0;
-                match unsafe { wtqueue(wintab_context_handel, &mut from, &mut to) } {
+                match unsafe { wintab_queue(wintab_context_handel, &mut from, &mut to) } {
                     0 => {}
                     _ => {
-                        // let mut packet = Packet::default();
-                        // let result = unsafe{wtpacket(wintab_context_handel, to, cast_void!(packet))};
-                        // if result!=0{
-                        //     println!("Size of one packet {result:?}");
-                        //     println!("{packet:#?}");
-                        // }
-
                         let mut count_packets_removed_from_queue = 0;
                         const MAX_PACKETS_TO_GET: i32 = 100;
                         let mut packets: [Packet; MAX_PACKETS_TO_GET as usize] =
                             core::array::from_fn(|_| Packet::default());
                         let _total_actually_found = unsafe {
-                            wtdataget(
+                            wintab_data_get(
                                 wintab_context_handel,
                                 from,
                                 to,
@@ -219,7 +221,7 @@ fn main() -> Result<()> {
 
                         let packets = &packets[0..count_packets_removed_from_queue as usize];
 
-                        //println!("Avaliable: {from}-{to} Found {total_actually_found} Removed {count_packets_removed_from_queue}");
+                        // println!("Available: {from}-{to} Found {total_actually_found} Removed {count_packets_removed_from_queue}");
                         if count_packets_removed_from_queue > 0 {
                             // println!("============ {count_packets_removed_from_queue}");
                             // packets.iter().for_each(|packet|println!("{packet:#?}"));
@@ -231,22 +233,6 @@ fn main() -> Result<()> {
                                 if packet.pkButtons.0 > 0 {
                                     println!("Buttons: {}", packet.pkButtons);
                                 }
-
-                                // previously I was trying to use a struct and relative mode;
-                                // this just does not work
-
-                                // match packet.pkButtons{
-                                //     ButtonChange{
-                                //         button_number,
-                                //         change_type:ButtonChangeType::DOWN
-                                //     }=>{
-                                //         print!("Button {button_number} DOWN");
-                                //         redraw = true;
-                                //     }
-                                //     _=>{
-                                //         println!("{:?}",packet.pkButtons)
-                                //     }
-                                // }
                             });
                         }
                     }
