@@ -12,25 +12,14 @@ use windows::Win32::{
 use winit::{
     event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
+    keyboard::KeyCode,
     raw_window_handle::{HasWindowHandle, RawWindowHandle, Win32WindowHandle},
     window::{Window, WindowBuilder},
 };
 
 use wintab_lite::{
-    cast_void,
-    Packet,
-    WTClose,
-    WTDataGet,
-    WTInfo,
-    WTOpen, 
-    WTQueuePacketsEx,
-    AXIS,
-    CXO,
-    DVC,
-    LOGCONTEXT,
-    WTI,
-    WTPKT,
-    XYZ
+    cast_void, Packet, WTClose, WTDataGet, WTInfo, WTOpen, WTQueuePacketsEx, AXIS, CXO, DVC,
+    LOGCONTEXT, WTI, WTPKT, XYZ,
 };
 
 fn extract_window_handel(window_holder: &Window) -> Result<HWND> {
@@ -154,7 +143,7 @@ fn main() -> Result<()> {
     // ======================================
     // Open the context
     // use the laboriously configured LOGCONTEXT struct to finally open a connection with our window
-    // The example says we are supposed to open it in the disabled state... but why. I just open it 
+    // The example says we are supposed to open it in the disabled state... but why. I just open it
     // in enabled state.
     let wintab_context_handel = unsafe { wintab_open(hwnd, &mut log_context, 1) };
     println!("Wintab context handel {:?}", wintab_context_handel);
@@ -193,7 +182,7 @@ fn main() -> Result<()> {
                     "Keyboard input: device_id={:?}, event={:?}, is_synthetic={}",
                     device_id, event, is_synthetic
                 );
-                if event.logical_key == "c" {
+                if event.physical_key == KeyCode::Space {
                     redraw = true;
                 }
             }
@@ -230,9 +219,6 @@ fn main() -> Result<()> {
                                 x = packet.pkXYZ.x;
                                 y = packet.pkXYZ.y;
                                 p = packet.pkNormalPressure;
-                                if packet.pkButtons.0 > 0 {
-                                    println!("Buttons: {}", packet.pkButtons);
-                                }
                             });
                         }
                     }
@@ -298,7 +284,10 @@ fn main() -> Result<()> {
                     },
                 ..
             } => {
-                println!("Touchpad pressure: device_id={:?}, pressure={:?}, stage={:?}", device_id, pressure, stage);
+                println!(
+                    "Touchpad pressure: device_id={:?}, pressure={:?}, stage={:?}",
+                    device_id, pressure, stage
+                );
             }
             _ => (),
         }
