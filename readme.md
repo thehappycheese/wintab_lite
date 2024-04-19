@@ -114,7 +114,8 @@ have a good time with that approach
 
 Please check out the [octotablet](https://crates.io/crates/octotablet/0.1.0)
 project. At the time of writing it is the goal of this crate to be wrapped by
-`octitablet`. Currently octotablet already provides functionality for devices
-(and versions of windows) that actually work reliably with Windows Ink. I did
-not have good outcomes with windows Ink on windows 11, and hence I started work
-on this crate.
+`octotablet`. Currently `octotablet` already provides Windows Ink functionality
+and support for other platforms.
+
+I did not have good results with windows Ink on my windows 11 machine, and
+therefore I started work on this crate.
