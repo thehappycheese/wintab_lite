@@ -3,12 +3,13 @@
 Defines a minimal set of types to get rust working with wintab.
 
 - [1. Licence](#1-licence)
-- [2. Example: Using `winit` and the `libloading` feature](#2-example-using-winit-and-the-libloading-feature)
-- [3. Example: Using `windows` and the `raw-dylib` feature](#3-example-using-windows-and-the-raw-dylib-feature)
-- [4. Limitations](#4-limitations)
-- [5. Alternatives](#5-alternatives)
-  - [5.1. `bindgen` with `wintab.h`](#51-bindgen-with-wintabh)
-  - [5.2. `octotablet` crate](#52-octotablet-crate)
+- [2. Examples](#2-examples)
+  - [2.1. Using `winit` and the `libloading` feature](#21-using-winit-and-the-libloading-feature)
+  - [2.2. Using `windows` and the `raw-dylib` feature](#22-using-windows-and-the-raw-dylib-feature)
+- [3. Limitations](#3-limitations)
+- [4. Alternatives](#4-alternatives)
+  - [4.1. `bindgen` with `wintab.h`](#41-bindgen-with-wintabh)
+  - [4.2. `octotablet` crate](#42-octotablet-crate)
 
 
 ## 1. Licence
@@ -18,7 +19,9 @@ See [here](https://github.com/Wacom-Developer/wacom-device-kit-windows/blob/881d
 and [here](https://developer-docs.wacom.com/docs/icbt/windows/wintab/wintab-reference/).
 The example code provided by Wacom is MIT licensed [here](https://github.com/Wacom-Developer/wacom-device-kit-windows/blob/881d8e8303e858e53584e70235fe32e3c9ef06f2/Wintab%20Pressure%20Test/SampleCode/MIT-license.txt)
 
-## 2. Example: Using `winit` and the `libloading` feature
+## 2. Examples
+
+### 2.1. Using `winit` and the `libloading` feature
 
 ```bash
 cargo run --example winit_libloading --features="libloading"
@@ -43,7 +46,7 @@ Notes:
     works. Hopefully they see fit to make `lparam` and `wparam` available in the new
     system.
 
-## 3. Example: Using `windows` and the `raw-dylib` feature
+### 2.2. Using `windows` and the `raw-dylib` feature
 
 ```bash
 cargo run --example windows_raw_dylib --features="raw-dylib"
@@ -69,7 +72,7 @@ Notes:
   `SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE)` is
   critical to avoid hours of painful debugging scaling problems!
 
-## 4. Limitations
+## 3. Limitations
 
 - Not all foreign functions are ported.
   - For example `WTEnable` is currently missing but I will probably add it in a
@@ -91,9 +94,9 @@ Notes:
     perhaps it is worth doing to ensure consistency across different hardware?
 
 
-## 5. Alternatives
+## 4. Alternatives
 
-### 5.1. `bindgen` with `wintab.h`
+### 4.1. `bindgen` with `wintab.h`
 An alternative to this crate is to use
 [bindgen](https://crates.io/crates/bindgen) and the original `wintab.h` header
 files which are avaliable
@@ -107,7 +110,7 @@ have a good time with that approach
  - Enums are represented as separate const declarations instead of being a rust
    `enum` or using the `bitflags` crate.
 
-### 5.2. `octotablet` crate
+### 4.2. `octotablet` crate
 
 Please check out the [octotablet](https://crates.io/crates/octotablet/0.1.0)
 project. At the time of writing it is the goal of this crate to be wrapped by
