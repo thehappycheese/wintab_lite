@@ -1,3 +1,4 @@
+![crates.io](https://img.shields.io/crates/v/wintab_lite.svg)
 # Wintab; Lite-ly Rusted <!-- omit in toc -->
 
 Defines a minimal set of types to get rust working with wintab.
